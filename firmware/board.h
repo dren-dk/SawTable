@@ -5,14 +5,14 @@
 /*
 | Define         | AVR | Pin | Description |
 |----------------|-----|-----|-------------|
-| VALVE_A        | PD3 | 1   | Internal pullup, pulled low when valve is in position A |
-| VALVE_B        | PD2 | 2   | Internal pullup, pulled low when valve is in position B |
+|                | PD3 | 1   | Serial trasmit |
+|                | PD2 | 2   | Serial receive |
 | LEG_A_DOWN     | PD1 | 5   | H-Bridge for leg A, down |
 | LEG_A_UP       | PD0 | 6   | H-Bridge for leg A, up |
 | LEG_B_DOWN     | PD4 | 7   | H-Bridge for leg B, down |
 | LEG_B_UP       | PD6 | 8   | H-Bridge for leg B, up |
-|                | PD7 | 9   |  |
-|                | PE6 | 10  |  |
+| VALVE_A        | PD7 | 9   | Internal pullup, pulled low when valve is in position A |
+| VALVE_B        | PE6 | 10  | Internal pullup, pulled low when valve is in position B |
 | LEG_A_SENSE    | PB4 | 11  | Internal pullup, pulled low by pulse sensor in leg A |
 | LEG_B_SENSE    | PB5 | 12  | Internal pullup, pulled low by pulse sensor in leg B |
 | BUTTON_3       | PB6 | 13  |  |
@@ -28,8 +28,8 @@
 
 #define LED_YELLOW     GPB0
 #define LED_GREEN      GPD5
-#define VALVE_A        GPD3
-#define VALVE_B        GPD2
+#define VALVE_A        GPD7
+#define VALVE_B        GPE6
 #define LEG_A_DOWN     GPD1
 #define LEG_A_UP       GPD0
 #define LEG_B_DOWN     GPD4

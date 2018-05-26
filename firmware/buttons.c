@@ -6,10 +6,15 @@ void buttonInit() {
   GPINPUT(BUTTON_2);
   GPINPUT(BUTTON_1);
   GPINPUT(BUTTON_0);
+  GPCLEAR(BUTTON_0);
+  GPCLEAR(BUTTON_1);
+  GPCLEAR(BUTTON_2);
+  GPCLEAR(BUTTON_3);
 }
 
 Button readButtons() {
   Button res = 0;
+  
   if (GPREAD(BUTTON_0)) {
     res += 1;
   }

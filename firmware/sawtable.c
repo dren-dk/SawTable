@@ -25,14 +25,22 @@ int main(void) {
 
   while (1) {
     wdt_reset();
+
+    setGreenLed(GPREAD(VALVE_A));
+    setYellowLed(GPREAD(VALVE_B));
+
     
     Button button = readButtons();
-
+    
     if (lastButton != button) {
+      P("Current button: %d\n", button);
+      
       if (button == BTN_S) {
+	L("toggle manual B");
 	toggleVacManual(VAC_MANUAL_ON_B);
 
       } else if (button == BTN_3) {
+	L("toggle manual A");
 	toggleVacManual(VAC_MANUAL_ON_A);
       }
       

@@ -18,36 +18,73 @@
 
 #include "uart.h"
 
+#if defined(UCSR0A)
+
+#define UCSRnA UCSR0A
+#define UCSRnB UCSR0B
+#define UDREn UDRE0
+#define UDRn UDR0
+#define FEn FE0
+#define RXCn RXC0
+#define DORn DOR0
+#define RXENn RXEN0
+#define TXENn TXEN0
+#define U2Xn U2X0
+#define UBRRnH UBRR0H
+#define UBRRnL UBRR0L
+
+
+#elif  defined(UCSR1A)
+
+#define UCSRnA UCSR1A
+#define UCSRnB UCSR1B
+#define UDREn UDRE1
+#define UDRn UDR1
+#define FEn FE1
+#define RXCn RXC1
+#define DORn DOR1
+#define RXENn RXEN1
+#define TXENn TXEN1
+#define U2Xn U2X1
+#define UBRRnH UBRR1H
+#define UBRRnL UBRR1L
+
+
+#else
+#error "Neither uart 0 or uart 1 exist"
+#endif
+
+
 int uart_putchar(char c, FILE *stream){
 
   if (c == '\n') {
     uart_putchar('\r', stream);
   }
-  loop_until_bit_is_set(UCSR0A, UDRE0);
-  UDR0 = c;
+  loop_until_bit_is_set(UCSRnA, UDREn);
+  UDRn = c;
   
   return 0;
 }
 
 int uart_getchar(FILE *stream) {
 
-  if (UCSR0A & 1<<RXC0) {
-    if (UCSR0A & _BV(FE0))
+  if (UCSRnA & 1<<RXCn) {
+    if (UCSRnA & _BV(FEn))
       return _FDEV_EOF;
-    if (UCSR0A & _BV(DOR0))
+    if (UCSRnA & _BV(DORn))
       return _FDEV_ERR;
     
-    return UDR0;
+    return UDRn;
   } else {
     return -1000;
   }
 }
 
 void uartInit(void) {
-  UCSR0A = _BV(U2X0);   
-  UBRR0H = 0;
-  UBRR0L = (F_CPU / (8UL * UART_BAUD)) - 1;
-  UCSR0B = _BV(TXEN0) | _BV(RXEN0); /* tx/rx enable */
+  UCSRnA = _BV(U2Xn);   
+  UBRRnH = 0;
+  UBRRnL = (F_CPU / (8UL * UART_BAUD)) - 1;
+  UCSRnB = _BV(TXENn) | _BV(RXENn); /* tx/rx enable */
   
   static FILE uart_output = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
   static FILE uart_input = FDEV_SETUP_STREAM(NULL, uart_getchar, _FDEV_SETUP_READ);

@@ -6,9 +6,17 @@ void ledInit(void) {
   GPOUTPUT(LED_YELLOW);
 }
 
+void setGreenLed(uint8_t on) {
+  GPWRITE(LED_GREEN, !on);
+}
+
+void setYellowLed(uint8_t on) {
+  GPWRITE(LED_YELLOW, !on);
+}
+
 void ledSet(uint8_t mask) {
-  GPWRITE(LED_YELLOW, !(mask & 1));
-  GPWRITE(LED_GREEN, !(mask & 2));
+  setYellowLed(mask & 1);
+  setGreenLed(mask & 2);
 }
 
 void ledBooting(void) {

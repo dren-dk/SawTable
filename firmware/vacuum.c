@@ -1,12 +1,18 @@
+#include <util/delay.h>
+
 #include "vacuum.h"
 #include "board.h"
 #include "adchelper.h"
+#include "uart.h"
 
 #define MAX_CURRENT_mA 8400
 #define THRESHOLD_mW (100*1000L)
 #define VOLTAGE 230
 #define THRESHOLD_mA (THRESHOLD_mW/VOLTAGE)
 #define CURRENT_THRESHOLD_ADC (1023*THRESHOLD_mA/MAX_CURRENT_mA)
+
+#define OVERRUN 10
+
 
 void vacInit() {
   GPINPUT(VALVE_A);      GPSET(VALVE_A);
@@ -27,7 +33,10 @@ VacuumState getVacState() {
 }
 
 void setVacState(VacuumState state) {
+  P("Setting vac state %d\n", state);
+  
   if (state == VAC_OFF) {
+    L("Stopped vac");
     GPCLEAR(VAC_MOTOR);
     
   } else {    
@@ -39,16 +48,48 @@ void setVacState(VacuumState state) {
       GPSET(VALVE_MOTOR); // Start switching the valve state.
 
       if (switchToA) {
-	while (GPREAD(VALVE_A)) {}
+	L("Switching valve to A");
+	uint8_t sure = OVERRUN;
+	while (sure) {
+	  if (GPREAD(VALVE_A)) {
+	    sure = OVERRUN;
+	  } else {
+	    sure--;
+	    _delay_ms(1);
+	  }
+	}
+	
+	//while (GPREAD(VALVE_A)) {
+	//  _delay_ms(1);
+	//}
 	// TODO: Delay to hit the right top-point here, if needed.
       }
       if (switchToB) {
-	while (GPREAD(VALVE_B)) {}
+	L("Switching valve to B");
+	//	while (GPREAD(VALVE_B)) {
+	//  _delay_ms(1);
+	//}
+
+	uint8_t sure = OVERRUN;
+	while (sure) {
+	  if (GPREAD(VALVE_B)) {
+	    sure = OVERRUN;
+	  } else {
+	    sure--;
+	    _delay_ms(1);
+	  }
+	}
+
+	
 	// TODO: Delay to hit the right top-point here, if needed.
       }
 
+      _delay_ms(100);
+      
+      L("Done switching valve");
       GPCLEAR(VALVE_MOTOR); // Done switching      
     }
+    L("Starting vac");
     GPSET(VAC_MOTOR); // Always end up with the shopvac running.
   }
 
@@ -63,26 +104,40 @@ void toggleVacManual(VacuumState state) {
   }
 }
 
+uint16_t verboseCount = 0;
+
 void autoVac() {
-  uint8_t onA = getADC(CURRENT_A_ADC) > CURRENT_THRESHOLD_ADC;
-  uint8_t onB = getADC(CURRENT_B_ADC) > CURRENT_THRESHOLD_ADC;
-  
+  uint16_t currentA = getADC(CURRENT_A_ADC);
+  uint16_t currentB = getADC(CURRENT_B_ADC);
+
+  if (verboseCount++ > 5000) {
+    verboseCount = 0;
+    P("Current A = %d Current B = %d (threshold = %d)\n", currentA, currentB, CURRENT_THRESHOLD_ADC);
+  }
+   
   if (currentState == VAC_OFF) {
+    uint8_t onA = currentA > CURRENT_THRESHOLD_ADC*2;
+    uint8_t onB = currentB > CURRENT_THRESHOLD_ADC*2;
     if (onA) {
       setVacState(VAC_AUTO_ON_A);
     } else if (onB) {
       setVacState(VAC_AUTO_ON_B);
     }
 
-  } else if (currentState == VAC_AUTO_ON_A) {
-    if (!onA) {
-      setVacState(VAC_OFF);
-    }
+  } else {
+    uint8_t offA = currentA < CURRENT_THRESHOLD_ADC;
+    uint8_t offB = currentB < CURRENT_THRESHOLD_ADC;
 
-  } else if (currentState == VAC_AUTO_ON_B) {
-    if (!onB) {
-      setVacState(VAC_OFF);
+    if (currentState == VAC_AUTO_ON_A) {
+      if (offA) {
+	setVacState(VAC_OFF);
+      }
+
+    } else if (currentState == VAC_AUTO_ON_B) {
+      if (offB) {
+	setVacState(VAC_OFF);
+      }
     }
-  }  
+  }
 }
 

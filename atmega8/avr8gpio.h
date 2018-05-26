@@ -24,13 +24,14 @@
  * PINA & 1<<PA3           GPREAD(GPA3)
  * 
  * 
- * If the GP macros are used with constants, then the code generated is exactly the same as the traditional
- * way of doing things, but it's also possible to use variable, in which case the there will be a
- * slight penalty of a couple of shitfts and an add and a bitwise and for each read or write.
+ * If the GP macros are used with constants, then the code generated is exactly the same as
+ * the traditional way of doing things, but it's also possible to use variable,
+ * in which case the there will be a slight penalty of a couple of shitfts and an add
+ * and a bitwise and for each read or write.
  * 
  * The great advantage of doing this is that configuring a specific GPIO port can be done by defining
- * a single constant rather than the 4 needed (PINx, DDRx, PORTx and pin number) when using the traditional
- * approach.
+ * a single constant rather than the 4 needed (PINx, DDRx, PORTx and pin number) when using
+ * the traditional approach.
  * 
  */
 
