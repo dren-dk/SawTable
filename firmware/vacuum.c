@@ -11,7 +11,7 @@
 #define THRESHOLD_mA (THRESHOLD_mW/VOLTAGE)
 #define CURRENT_THRESHOLD_ADC (1023*THRESHOLD_mA/MAX_CURRENT_mA)
 
-#define OVERRUN 10
+#define OVERRUN 25
 
 
 void vacInit() {

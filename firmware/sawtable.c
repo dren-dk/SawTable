@@ -26,10 +26,6 @@ int main(void) {
   while (1) {
     wdt_reset();
 
-    setGreenLed(GPREAD(VALVE_A));
-    setYellowLed(GPREAD(VALVE_B));
-
-    
     Button button = readButtons();
     
     if (lastButton != button) {
@@ -42,6 +38,22 @@ int main(void) {
       } else if (button == BTN_3) {
 	L("toggle manual A");
 	toggleVacManual(VAC_MANUAL_ON_A);
+
+      } else if (button == BTN_U) {
+	L("Retracting legs");
+	legRetract();
+      } else if (button == BTN_D) {
+	L("Deploying legs");
+	legDeploy();
+      } else if (button == BTN_1) {
+	L("Tilting towards B");
+	legPitch(0);
+      } else if (button == BTN_2) {
+	L("Tilting towards A");
+	legPitch(1);
+      } else if (button == BTN_NONE) {
+	L("Stopping legs");
+	legStop();
       }
       
       lastButton = button;
