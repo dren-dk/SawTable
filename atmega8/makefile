@@ -93,4 +93,3 @@ clean :
 
 #$(FW)/avr8gpio.h: $(FW)/gen-gpio
 #	$(FW)/gen-gpio
-	
