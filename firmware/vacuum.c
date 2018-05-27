@@ -112,7 +112,9 @@ void autoVac() {
 
   if (verboseCount++ > 5000) {
     verboseCount = 0;
-    P("Current A = %d Current B = %d (threshold = %d)\n", currentA, currentB, CURRENT_THRESHOLD_ADC);
+    if (currentA || currentB) {
+      P("Current A = %d Current B = %d (threshold = %d)\n", currentA, currentB, CURRENT_THRESHOLD_ADC);
+    }
   }
    
   if (currentState == VAC_OFF) {
