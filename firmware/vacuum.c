@@ -11,7 +11,7 @@
 #define THRESHOLD_mA (THRESHOLD_mW/VOLTAGE)
 #define CURRENT_THRESHOLD_ADC (1023*THRESHOLD_mA/MAX_CURRENT_mA)
 
-#define OVERRUN 25
+#define OVERRUN 10
 
 
 void vacInit() {
@@ -76,12 +76,10 @@ void setVacState(VacuumState state) {
 	    sure = OVERRUN;
 	  } else {
 	    sure--;
-	    _delay_ms(1);
+	    _delay_us(10);
 	  }
 	}
 
-	
-	// TODO: Delay to hit the right top-point here, if needed.
       }
 
       _delay_ms(100);
